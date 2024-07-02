@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.servlet.http.HttpSession;
+
 @Controller
 @RequestMapping("/member") // 공통 주소
 @RequiredArgsConstructor
@@ -27,6 +29,26 @@ public class MemberController {
             return "login";
         } else {
             return "save";
+        }
+    }
+
+    @GetMapping("/login")
+    // 로그인 페이지 메소드
+    public String loginForm() {
+        return "login";
+    }
+
+    @PostMapping("/login")
+    // 로그인 처리 메소드
+    public String login(@ModelAttribute MemberDTO memberDTO,
+                        HttpSession session) {
+        boolean loginResult = memberService.login(memberDTO);
+        if (loginResult) {
+            //로그인 하고나면 정보가 계속 따라다녀야 해서 session 활옹
+            session.setAttribute("loginEmail", memberDTO.getMemberEmail());
+            return "main"; //main.jsp로
+        } else {
+            return "login"; //login.jsp로
         }
     }
 }
